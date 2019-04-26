@@ -1,10 +1,15 @@
 package com.shiq.demo.hellocoroutines
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import com.shiq.demo.hellocoroutines.http.HttpCallback
+import com.shiq.demo.hellocoroutines.http.HttpService
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,6 +36,26 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+
+            HttpService.get("https://raw.github.com/square/okhttp/master/README.md",
+                object : HttpCallback {
+                    override fun onStart() {
+                        Log.d("test", "onStart")
+                    }
+
+                    override fun onFinish() {
+                        Log.d("test", "onFinish")
+                    }
+
+                    override fun onFailure(statusCode: Int, message: String?) {
+                        Log.d("test", "onFailure: statusCode=$statusCode, message=$message")
+                    }
+
+                    override fun onSuccess(message: String?) {
+                        Log.d("test", "onFailure: onSuccess=$message")
+                    }
+                })
+
         }
     }
 
