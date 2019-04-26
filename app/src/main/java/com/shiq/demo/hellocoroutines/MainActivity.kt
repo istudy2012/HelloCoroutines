@@ -26,36 +26,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun test() {
         button_view.setOnClickListener {
-            runBlocking {
-                GlobalScope.launch(Dispatchers.Main) {
-                    Log.d("test", "onClick")
-                    Log.d("test", "runBlocking current thread: ${Thread.currentThread().name}")
-                    runBlocking {
-                        button_view.text = "" + System.currentTimeMillis()
-                        Log.d("test", "runBlocking2 current thread: ${Thread.currentThread().name}")
-                    }
+            GlobalScope.launch(Dispatchers.Main) {
+                Log.d("test", "onClick")
+                Log.d("test", "runBlocking current thread: ${Thread.currentThread().name}")
+                val result = HttpService.getSync("https://raw.github.com/square/okhttp/master/README.md")
+                if (result.isSuccessful()) {
+                    Log.d("test", "getSync isSuccessful")
+                    button_view.text = "success"
+                } else {
+                    Log.d("test", "getSync failure")
+                    button_view.text = "failure"
                 }
             }
-
-            HttpService.get("https://raw.github.com/square/okhttp/master/README.md",
-                object : HttpCallback {
-                    override fun onStart() {
-                        Log.d("test", "onStart")
-                    }
-
-                    override fun onFinish() {
-                        Log.d("test", "onFinish")
-                    }
-
-                    override fun onFailure(statusCode: Int, message: String?) {
-                        Log.d("test", "onFailure: statusCode=$statusCode, message=$message")
-                    }
-
-                    override fun onSuccess(message: String?) {
-                        Log.d("test", "onFailure: onSuccess=$message")
-                    }
-                })
-
         }
     }
 
